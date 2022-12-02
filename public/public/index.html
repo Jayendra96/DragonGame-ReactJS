@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <script>
+    score = 0;
+cross = true;
+
+audio = new Audio('music.mp3');
+audiogo = new Audio('gameover.mp3');
+setTimeout(() => {
+    audio.play()
+}, 1000);
+document.onkeydown = function (e) {
+    console.log("Key code is: ", e.keyCode)
+    if (e.keyCode == 38) {
+        dino = document.querySelector('.dino');
+        dino.classList.add('animateDino');
+        setTimeout(() => {
+            dino.classList.remove('animateDino')
+        }, 700);
+    }
+    if (e.keyCode == 39) {
+        dino = document.querySelector('.dino');
+        dinoX = parseInt(window.getComputedStyle(dino, null).getPropertyValue('left'));
+        dino.style.left = dinoX + 112 + "px";
+    }
+    if (e.keyCode == 37) {
+        dino = document.querySelector('.dino');
+        dinoX = parseInt(window.getComputedStyle(dino, null).getPropertyValue('left'));
+        dino.style.left = (dinoX - 112) + "px";
+    }
+}
+
+setInterval(() => {
+    dino = document.querySelector('.dino');
+    gameOver = document.querySelector('.gameOver');
+    obstacle = document.querySelector('.obstacle');
+
+    dx = parseInt(window.getComputedStyle(dino, null).getPropertyValue('left'));
+    dy = parseInt(window.getComputedStyle(dino, null).getPropertyValue('top'));
+
+    ox = parseInt(window.getComputedStyle(obstacle, null).getPropertyValue('left'));
+    oy = parseInt(window.getComputedStyle(obstacle, null).getPropertyValue('top'));
+
+    offsetX = Math.abs(dx - ox);
+    offsetY = Math.abs(dy - oy);
+    // console.log(offsetX, offsetY)
+    if (offsetX < 73 && offsetY < 52) {
+        gameOver.innerHTML = "Game Over - Reload to Play Again"
+        obstacle.classList.remove('obstacleAni')
+        audiogo.play();
+        setTimeout(() => {
+            audiogo.pause();
+            audio.pause();
+        }, 1000);
+    }
+    else if (offsetX < 145 && cross) {
+        score += 1;
+        updateScore(score);
+        cross = false;
+        setTimeout(() => {
+            cross = true;
+        }, 1000);
+        setTimeout(() => {
+            aniDur = parseFloat(window.getComputedStyle(obstacle, null).getPropertyValue('animation-duration'));
+            newDur = aniDur - 0.1;
+            obstacle.style.animationDuration = newDur + 's';
+            console.log('New animation duration: ', newDur)
+        }, 500);
+
+    }
+
+}, 10);
+
+
+</script>
+<style>
+*{
+  margin: 0;
+  padding:0;
+}
+body{
+  background-color: red;
+  overflow: hidden;
+}
+.gameContainer{
+  background-image: url(bg.jpg);
+  background-repeat: no-repeat;
+  background-size: 100vw 100vh;
+  width: 100%;
+  height: 100vh;
+}
+
+.dino{
+  background-image: url(dino.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 233px;
+  height: 114px;
+  position: absolute;
+  bottom:0;
+  left: 52px;
+}
+
+.obstacle{
+  width: 166px;
+  height: 113px;
+  background-image: url(dragon.png);
+  background-size: cover;
+  position: absolute;
+  bottom: 0;
+  left: 44vw;
+}
+
+.animateDino{
+  animation: dino 0.6s linear;
+}
+
+.obstacleAni{
+  animation: obstacleAni 5s linear infinite;
+}
+
+.gameOver{
+  position: relative;
+  top:63px;
+  font-size: 53px;
+  text-align: center; 
+  font-family: 'Ubuntu', sans-serif;
+}
+
+#scoreCont{
+  font-size: 25px;
+  color: #54212f;
+  font-weight: bold;
+  position: absolute;
+  right: 45px;
+  top: 31px;
+  border: 2px solid black;
+  padding: 10px;
+  font-family: 'Ubuntu', sans-serif;
+  border-radius: 10px;
+}
+
+@keyframes dino{
+  0%{
+      bottom: 0;
+  }
+  50%{
+      bottom: 422px;
+  }
+  100%{
+      bottom: 0; 
+  }
+}
+
+@keyframes obstacleAni{
+  0%{
+      left: 100vw;
+  }
+  100%{
+      left: -10vw;
+  }
+}</style>
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
